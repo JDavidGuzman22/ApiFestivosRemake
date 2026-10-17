@@ -1,6 +1,37 @@
 const festivoRepositorio = require('../repositorios/festivo.repositorio');
-const tipoFestivoServicio = require('./tipoFestivo.servicio');
+const fechaServicio = require('./fecha.servicio');
 const festivoValidador = require('../validadores/festivo.validador');
+
+function calcularFechaFestivo(tipo, festivo, anio) {
+    let fecha;
+
+    switch (tipo.id) {
+        case 1:
+            fecha = new Date(anio, festivo.mes - 1, festivo.dia);
+            break;
+
+        case 2:
+            fecha = new Date(anio, festivo.mes - 1, festivo.dia);
+            fecha = fechaServicio.siguienteLunes(fecha);
+            break;
+
+        case 3:
+            fecha = fechaServicio.obtenerDomingoPascua(anio);
+            fecha = fechaServicio.agregarDias(fecha, festivo.diasPascua);
+            break;
+
+        case 4:
+            fecha = fechaServicio.obtenerDomingoPascua(anio);
+            fecha = fechaServicio.agregarDias(fecha, festivo.diasPascua);
+            fecha = fechaServicio.siguienteLunes(fecha);
+            break;
+
+        default:
+            throw new Error(`Tipo de festivo no soportado: ${tipo.id}`);
+    }
+
+    return fecha;
+}
 
 async function listarFestivosPorAnio(anio) {
     const tipos = await festivoRepositorio.listarTipos();
@@ -8,7 +39,7 @@ async function listarFestivosPorAnio(anio) {
 
     for (const tipo of tipos) {
         for (const festivo of tipo.festivos) {
-            const fecha = tipoFestivoServicio.calcularFechaFestivo(
+            const fecha = calcularFechaFestivo(
                 tipo,
                 festivo,
                 anio

@@ -7,7 +7,7 @@ Este proyecto forma parte del taller de Arquitectura de Software II del Institut
 ## Funcionalidades
 
 - Consultar los festivos correspondientes a un año.
-- Verificar si una fecha es festiva.
+- Verificar si una fecha es festiva (respuesta en texto plano).
 - Agregar nuevos festivos.
 - Actualizar festivos existentes.
 - Eliminar festivos.
@@ -31,6 +31,7 @@ Los festivos se almacenan en la base de datos `festivos`, dentro de la colecció
 
 | Método | Ruta | Descripción |
 |---|---|---|
+| GET | `/festivos/tipos` | Consultar los tipos de festivo |
 | GET | `/festivos/:anio` | Consultar festivos de un año |
 | GET | `/festivos/verificar/:anio/:mes/:dia` | Verificar si una fecha es festiva |
 | POST | `/festivos/:idTipo` | Agregar un festivo |

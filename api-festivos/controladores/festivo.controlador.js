@@ -1,4 +1,5 @@
 const festivoServicio = require('../servicios/festivo.servicio');
+const tipoFestivoServicio = require('../servicios/tipoFestivo.servicio');
 
 exports.listarPorAnio = async (req, res) => {
     try {
@@ -29,31 +30,18 @@ exports.verificarFestivo = async (req, res) => {
         const mes = Number(req.params.mes);
         const dia = Number(req.params.dia);
 
-        const fecha = new Date(anio, mes - 1, dia);
-
-        if (
-            !Number.isInteger(anio) ||
-            !Number.isInteger(mes) ||
-            !Number.isInteger(dia) ||
-            anio < 1900 || anio > 9999 ||
-            mes < 1 || mes > 12 ||
-            dia < 1 ||
-            fecha.getFullYear() !== anio ||
-            fecha.getMonth() !== mes - 1 ||
-            fecha.getDate() !== dia
-        ) {
-            return res.status(400).json({
-                mensaje: 'La fecha proporcionada no es válida'
-            });
-        }
-
         const resultado = await festivoServicio.verificarFestivo(
             anio,
             mes,
             dia
         );
 
-        return res.status(200).json(resultado);
+        if (resultado.esFestivo) {
+            return res.status(200).type('text/plain').send('Es Festivo');
+        }
+
+        return res.status(200).type('text/plain').send('No es festivo');
+
     } catch (error) {
         console.error('Error verificando festivo:', error);
 
@@ -152,3 +140,14 @@ exports.eliminarFestivo = async (req, res) => {
 };
 
 
+
+
+exports.listarTipos = async (req, res) => {
+    try {
+        const tipos = await tipoFestivoServicio.listarTipos();
+        return res.status(200).json(tipos);
+    } catch (error) {
+        console.error('Error consultando tipos de festivo:', error);
+        return res.status(500).json({ mensaje: 'Error obteniendo los tipos de festivo' });
+    }
+};

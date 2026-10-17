@@ -74,24 +74,12 @@
  *         example: 2
  *     responses:
  *       200:
- *         description: Resultado de la verificación
+ *         description: Responde Es Festivo, No es festivo o Fecha No valida
  *         content:
- *           application/json:
+ *           text/plain:
  *             schema:
- *               type: object
- *               properties:
- *                 fecha:
- *                   type: string
- *                   example: 2026-04-02
- *                 esFestivo:
- *                   type: boolean
- *                   example: true
- *                 nombre:
- *                   type: string
- *                   nullable: true
- *                   example: Jueves Santo
- *       400:
- *         description: Fecha inválida
+ *               type: string
+ *               example: Es Festivo
  *       500:
  *         description: Error interno del servidor
  */
@@ -244,17 +232,61 @@
  *         description: Error interno del servidor
  */
 
+/**
+ * @swagger
+ * /festivos/tipos:
+ *   get:
+ *     summary: Consultar los tipos de festivo
+ *     tags:
+ *       - Festivos
+ *     responses:
+ *       200:
+ *         description: Lista de tipos de festivo de MongoDB
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *       500:
+ *         description: Error interno del servidor
+ */
+
 module.exports = (app) => {
     const festivoControlador = require('../controladores/festivo.controlador');
+    const festivoValidador = require('../validadores/festivo.validador');
 
-    app.get('/festivos/:anio', festivoControlador.listarPorAnio);
+    // La ruta fija debe declararse antes de /festivos/:anio.
+    app.get('/festivos/tipos', festivoControlador.listarTipos);
 
-    app.get('/festivos/verificar/:anio/:mes/:dia',festivoControlador.verificarFestivo);
+    app.get(
+        '/festivos/:anio',
+        festivoValidador.validarAnio,
+        festivoControlador.listarPorAnio
+    );
 
-    app.post('/festivos/:idTipo', festivoControlador.agregarFestivo);
+    app.get(
+        '/festivos/verificar/:anio/:mes/:dia',
+        festivoValidador.validarFecha,
+        festivoControlador.verificarFestivo
+    );
 
-    app.put('/festivos/:idTipo/:nombre', festivoControlador.actualizarFestivo);
+    app.post(
+    '/festivos/:idTipo',
+    festivoValidador.validarDatosFestivo,
+    festivoControlador.agregarFestivo
+    );
 
-    app.delete('/festivos/:idTipo/:nombre', festivoControlador.eliminarFestivo);
+    app.put(
+        '/festivos/:idTipo/:nombre',
+        festivoValidador.validarIdentificadorFestivo,
+        festivoValidador.validarDatosFestivo,
+        festivoControlador.actualizarFestivo
+    );
 
+    app.delete(
+        '/festivos/:idTipo/:nombre',
+        festivoValidador.validarIdentificadorFestivo,
+        festivoControlador.eliminarFestivo
+    );
 };

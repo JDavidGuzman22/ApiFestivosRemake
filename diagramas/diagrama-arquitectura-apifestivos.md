@@ -59,7 +59,7 @@ graph TD
     Repository -.->|14. Retorna resultado| FestivoService
     TipoService -.->|15. Retorna resultado| Controller
     FestivoService -.->|16. Retorna resultado| Controller
-    Controller -.->|17. Respuesta JSON| Client
+    Controller -.->|17. Respuesta HTTP (JSON o texto plano)| Client
 
     %% Estilos de Nodos
     style ClientLayer fill:#e1f5fe,stroke:#0288d1,stroke-width:2px

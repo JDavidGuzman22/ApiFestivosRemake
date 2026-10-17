@@ -50,6 +50,76 @@ function validarFestivo(idTipo, festivo) {
     return errores;
 }
 
+function validarAnio(req, res, next) {
+    const anio = Number(req.params.anio);
+
+    if (!Number.isInteger(anio) || anio < 1900 || anio > 9999) {
+        return res.status(400).json({
+            mensaje: 'El año debe ser un número entero entre 1900 y 9999'
+        });
+    }
+
+    next();
+}
+
+function validarFecha(req, res, next) {
+    const anio = Number(req.params.anio);
+    const mes = Number(req.params.mes);
+    const dia = Number(req.params.dia);
+
+    const fecha = new Date(anio, mes - 1, dia);
+
+    if (
+        !Number.isInteger(anio) ||
+        !Number.isInteger(mes) ||
+        !Number.isInteger(dia) ||
+        anio < 1900 || anio > 9999 ||
+        mes < 1 || mes > 12 ||
+        dia < 1 ||
+        fecha.getFullYear() !== anio ||
+        fecha.getMonth() !== mes - 1 ||
+        fecha.getDate() !== dia
+    ) {
+        return res.status(200).type('text/plain').send('Fecha No valida');
+    }
+
+    next();
+}
+
+function validarDatosFestivo(req, res, next) {
+    const idTipo = Number(req.params.idTipo);
+    const errores = validarFestivo(idTipo, req.body);
+
+    if (errores.length > 0) {
+        return res.status(400).json({ errores });
+    }
+
+    next();
+}
+
+function validarIdentificadorFestivo(req, res, next) {
+    const idTipo = Number(req.params.idTipo);
+    const nombre = req.params.nombre;
+
+    if (!Number.isInteger(idTipo) || idTipo < 1 || idTipo > 4) {
+        return res.status(400).json({
+            errores: ['El tipo de festivo debe estar entre 1 y 4']
+        });
+    }
+
+    if (typeof nombre !== 'string' || !nombre.trim()) {
+        return res.status(400).json({
+            errores: ['El nombre del festivo es obligatorio']
+        });
+    }
+
+    next();
+}
+
 module.exports = {
-    validarFestivo
+    validarFestivo,
+    validarAnio,
+    validarFecha,
+    validarDatosFestivo,
+    validarIdentificadorFestivo
 };
